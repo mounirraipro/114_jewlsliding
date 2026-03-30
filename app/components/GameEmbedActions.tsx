@@ -3,6 +3,11 @@
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+};
+
 type GameEmbedActionsProps = {
   targetId: string;
   shareUrl?: string;
@@ -10,6 +15,36 @@ type GameEmbedActionsProps = {
 
 export default function GameEmbedActions({ targetId, shareUrl = '/play' }: GameEmbedActionsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
+  const [installLabel, setInstallLabel] = useState(() => {
+    if (typeof window === 'undefined') return 'Install App';
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as Navigator & { standalone?: boolean }).standalone;
+    return standalone ? 'Installed' : 'Install App';
+  });
+
+  useEffect(() => {
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as Navigator & { standalone?: boolean }).standalone;
+    if (standalone) return;
+
+    function handleBeforeInstallPrompt(event: Event) {
+      event.preventDefault();
+      setInstallEvent(event as BeforeInstallPromptEvent);
+      setInstallLabel('Install App');
+    }
+
+    function handleInstalled() {
+      setInstallEvent(null);
+      setInstallLabel('Installed');
+    }
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleInstalled);
+    };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -113,6 +148,24 @@ export default function GameEmbedActions({ targetId, shareUrl = '/play' }: GameE
     }
   }
 
+  async function handleInstall() {
+    if (!installEvent) {
+      setInstallLabel('Install from browser menu');
+      return;
+    }
+
+    await installEvent.prompt();
+    const choice = await installEvent.userChoice;
+
+    if (choice.outcome === 'accepted') {
+      setInstallLabel('Installing...');
+      setInstallEvent(null);
+      return;
+    }
+
+    setInstallLabel('Install App');
+  }
+
   const actionRowStyle: CSSProperties = {
     display: 'flex',
     justifyContent: 'center',
@@ -163,6 +216,14 @@ export default function GameEmbedActions({ targetId, shareUrl = '/play' }: GameE
           <path d="M15.41 6.51 8.59 10.49" />
         </svg>
         <span>Share JewelSliding</span>
+      </button>
+      <button type="button" onClick={handleInstall} style={buttonStyle}>
+        <svg style={iconStyle} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3v12" />
+          <path d="m7 10 5 5 5-5" />
+          <path d="M5 21h14" />
+        </svg>
+        <span>{installLabel}</span>
       </button>
     </div>
   );

@@ -4,6 +4,7 @@ import { Baloo_2, Nunito } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ServiceWorkerRegister from './components/ServiceWorkerRegister';
 import { gameCollections, totalPuzzleCount } from './lib/gameData';
 
 const nunito = Nunito({
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
     default: "JewelSliding - Free Online Gem Sliding Puzzle Game",
     template: "%s | JewelSliding",
   },
+  manifest: '/favicon/site.webmanifest',
   description:
     `Play JewelSliding free online. Slide glittering gem blocks into open gaps, clear solid rows, and survive the faster waves across ${gameCollections.length} challenge tracks.`,
   keywords: [
@@ -55,6 +57,12 @@ export const metadata: Metadata = {
     title: "JewelSliding - Free Online Gem Sliding Puzzle Game",
     description:
       `Play JewelSliding free online and clear glowing gem rows before the stack rises too high.`,
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'JewelSliding',
+    startupImage: ['/favicon/apple-touch-icon.png'],
   },
   robots: {
     index: true,
@@ -109,6 +117,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${nunito.variable} ${baloo.variable}`}>
+        <ServiceWorkerRegister />
         <Header />
         <main className="site-main">{children}</main>
         <Footer />
