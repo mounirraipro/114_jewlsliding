@@ -7,7 +7,7 @@ const navLinks = [
   { href: '/play', label: 'Play' },
   { href: '/categories', label: 'Challenge Tracks' },
   { href: '/how-to-play', label: 'How to Play' },
-  { href: '/blog', label: 'Gem Guides' },
+  { href: '/blog', label: 'Blog' },
   { href: '/about', label: 'About' },
 ];
 
