@@ -5,17 +5,18 @@ import AdSlot from '../../components/AdSlot';
 import AuthorByline from '../../components/AuthorByline';
 import RelatedArticles from '../../components/RelatedArticles';
 import Sources from '../../components/Sources';
-import { postSources, posts } from '../../lib/blogData';
+import { postSources, postSummaries } from '../../lib/blogData';
+import { getPostBySlug } from '../../lib/blogPosts';
 
 export function generateStaticParams() {
-    return posts.map((post) => ({ slug: post.slug }));
+    return postSummaries.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata(
     { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
     const { slug } = await params;
-    const post = posts.find((entry) => entry.slug === slug);
+    const post = getPostBySlug(slug);
 
     if (!post) {
         return {
@@ -55,13 +56,13 @@ export default async function BlogPostPage({
     params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
-    const post = posts.find((entry) => entry.slug === slug);
+    const post = getPostBySlug(slug);
 
     if (!post) {
         notFound();
     }
 
-    const relatedArticles = posts
+    const relatedArticles = postSummaries
         .filter((entry) => entry.slug !== post.slug)
         .sort((a, b) => {
             if (a.category === post.category && b.category !== post.category) return -1;

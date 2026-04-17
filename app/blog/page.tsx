@@ -3,19 +3,19 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import AdSlot from '../components/AdSlot';
-import { posts } from '../lib/blogData';
+import { postSummaries } from '../lib/blogData';
 
 export default function BlogPage() {
     const [activeCategory, setActiveCategory] = useState('All');
 
     const sortedPosts = useMemo(() => {
-        return [...posts].sort(
+        return [...postSummaries].sort(
             (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
     }, []);
 
     const allCategories = useMemo(
-        () => ['All', ...Array.from(new Set(posts.map((p) => p.category)))],
+        () => ['All', ...Array.from(new Set(postSummaries.map((p) => p.category)))],
         []
     );
 
@@ -29,7 +29,7 @@ export default function BlogPage() {
             <div className="page-header">
                 <div className="container">
                     <h1 className="gradient-text">JewelSliding Blog</h1>
-                    <p>Short strategy notes, family guidance, and practical reads for people who like fast browser puzzle sessions.</p>
+                    <p>Long-form strategy guides, family reads, and browser puzzle analysis for people who want to understand JewelSliding more deeply.</p>
                 </div>
             </div>
 

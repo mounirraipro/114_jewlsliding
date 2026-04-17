@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { posts } from '../lib/blogData';
+import { postSummaries } from '../lib/blogData';
 import { gameCollections } from '../lib/gameData';
 
 export const metadata: Metadata = {
@@ -35,7 +35,7 @@ const sections = [
         title: 'Blog',
         links: [
             { href: '/blog', label: 'Blog Home' },
-            ...posts.map((post) => ({
+            ...postSummaries.map((post) => ({
                 href: `/blog/${post.slug}`,
                 label: post.title,
             })),

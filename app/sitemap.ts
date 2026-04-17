@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { gameCollections } from './lib/gameData';
-import { posts } from './lib/blogData';
+import { postSummaries } from './lib/blogData';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://jewelsliding.com';
@@ -23,7 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/accessibility', priority: 0.1, changeFrequency: 'yearly' as const, lastModified: appUpdatedAt },
   ];
 
-  const blogPosts = posts.map((post) => ({
+  const blogPosts = postSummaries.map((post) => ({
     path: `/blog/${post.slug}`,
     priority: 0.6,
     changeFrequency: 'monthly' as const,
